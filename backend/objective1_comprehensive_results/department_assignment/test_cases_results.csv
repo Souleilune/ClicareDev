@@ -1,0 +1,51 @@
+test_case,symptoms,age,category,expected_department,predicted_department,correct,patient_id
+1,Ear Pain,25,ENT,ENT and Ophthalmology,ENT and Ophthalmology,True,PAT972345866
+2,Hearing Loss,50,ENT,ENT and Ophthalmology,ENT and Ophthalmology,True,PAT974193374
+3,Vision Problems,35,Ophthalmology,ENT and Ophthalmology,ENT and Ophthalmology,True,PAT975591683
+4,Eye Redness,32,Ophthalmology,ENT and Ophthalmology,ENT and Ophthalmology,True,PAT977018822
+5,Sinusitis,30,ENT,ENT and Ophthalmology,ENT and Ophthalmology,True,PAT978471942
+6,Irregular Menstruation,25,Gynecology,Obstetrics and Gynecology,Obstetrics and Gynecology,True,PAT979873848
+7,Pregnancy Check-up,28,Obstetrics,Obstetrics and Gynecology,Obstetrics and Gynecology,True,PAT981354748
+8,Prenatal Care,30,Obstetrics,Obstetrics and Gynecology,Obstetrics and Gynecology,True,PAT982769967
+9,Pelvic Pain,26,Gynecology,Obstetrics and Gynecology,Obstetrics and Gynecology,True,PAT984132125
+10,Suspected Appendicitis,25,Emergency Surgery,General Surgery,General Surgery,True,PAT985550615
+11,Hernia,40,Elective Surgery,General Surgery,General Surgery,True,PAT986949392
+12,Gallstones,45,Hepatobiliary,General Surgery,General Surgery,True,PAT988396732
+13,Abscess,30,Infection,General Surgery,General Surgery,True,PAT989770332
+14,Fever (Child),5,Pediatric General,Pediatrics,Pediatrics,True,PAT991121371
+15,Cough and Colds (Child),8,Pediatric Respiratory,Pediatrics,Pediatrics,True,PAT992469653
+16,Vaccination,2,Preventive Care,Pediatrics,Pediatrics,True,PAT994094284
+17,Ear Pain (Child),6,Pediatric ENT,Pediatrics,Pediatrics,True,PAT995553096
+18,Fever,25,General Medicine,Family Medicine Regular,Family Medicine Regular,True,PAT996989577
+19,Headache,30,General Medicine,Family Medicine Regular,Family Medicine Regular,True,PAT998649593
+20,Cough,35,Respiratory,Family Medicine Regular,Family Medicine Regular,True,PAT000076636
+21,Annual Check-up,40,Routine Care,Family Medicine Regular,Family Medicine Regular,True,PAT001500409
+22,Fatigue,32,General Medicine,Family Medicine Regular,Family Medicine Regular,True,PAT002850612
+23,Senior Check-up,65,Senior Care,Family Medicine Senior/PWD,Family Medicine Senior/PWD,True,PAT004238686
+24,Blood Pressure Check,70,Senior Care,Family Medicine Senior/PWD,Family Medicine Senior/PWD,True,PAT005713478
+25,Diabetes Monitoring,68,Senior Care,Family Medicine Senior/PWD,Family Medicine Senior/PWD,True,PAT007200139
+26,Chest Discomfort,45,Cardiovascular,Cardiology,Cardiology,True,PAT008654659
+27,High Blood Pressure,50,Cardiovascular,Internal Medicine,Internal Medicine,True,PAT010096948
+28,Diabetes,55,Endocrine,Internal Medicine,Internal Medicine,True,PAT011452926
+29,Shortness of Breath,48,Respiratory,Internal Medicine,Internal Medicine,True,PAT012861226
+30,Stomach Pain,40,Gastrointestinal,Internal Medicine,Internal Medicine,True,PAT014428981
+31,Persistent Cough,35,Respiratory,TB DOTS,TB DOTS,True,PAT015936817
+32,Night Sweats,40,TB Symptoms,TB DOTS,TB DOTS,True,PAT017603842
+33,Unexplained Weight Loss,38,TB Symptoms,TB DOTS,TB DOTS,True,PAT019138817
+34,Toothache,25,Dental Pain,Dental,Dental,True,PAT020446994
+35,Gum Bleeding,35,Periodontal,Dental,Dental,True,PAT022007781
+36,Tooth Decay,20,Restorative,Dental,Dental,True,PAT023413157
+37,Oral Infection,30,Oral Pathology,Dental,Dental,True,PAT024976178
+38,Diabetes Management,50,Endocrine,Diabetes Clinic,Diabetes Clinic,True,PAT026373612
+39,High Blood Sugar,55,Endocrine,Diabetes Clinic,Diabetes Clinic,True,PAT027809736
+40,Heart Disease,60,Cardiovascular,Cardiology,Cardiology,True,PAT029279480
+41,Irregular Heartbeat,58,Cardiovascular,Cardiology,Cardiology,True,PAT030812814
+42,Heart Attack History,65,Cardiovascular,Cardiology,Cardiology,True,PAT032128562
+43,Kidney Disease,55,Renal Care,Nephrology Adult,Nephrology Adult,True,PAT033587460
+44,Abnormal Creatinine Levels,50,Renal Function,Nephrology Adult,Nephrology Adult,True,PAT034960954
+45,Asthma,40,Respiratory,Pulmonology Adult,Pulmonology Adult,True,PAT036342277
+46,COPD,65,Respiratory,Pulmonology Adult,Pulmonology Adult,True,PAT037767999
+47,Seizure Disorder/Epilepsy,35,Neurological,Neurology,Neurology,True,PAT039312713
+48,Migraine,30,Neurological,Neurology,Neurology,True,PAT040710892
+49,Chronic Abdominal Pain,40,GI Procedures,Gastroenterology Adult,Gastroenterology Adult,True,PAT042170193
+50,Chronic/Recurrent Black Stool,45,GI Bleeding,Gastroenterology Adult,Gastroenterology Adult,True,PAT043614140

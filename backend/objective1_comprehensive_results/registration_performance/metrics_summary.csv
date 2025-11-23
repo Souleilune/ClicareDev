@@ -1,0 +1,5 @@
+Metric,Formula,Target (%),Result (%),Interpretation
+Web Pre-Registration Success Rate (WPRSR),(Successful Web Registrations / Total Attempts) × 100,≥95,100.00,PASS
+Hospital Kiosk Registration Completion Rate (HKRCR),(Completed Kiosk Sessions / Initiated Sessions) × 100,≥90,100.00,PASS
+QR Code Verification Accuracy (QRCVA),(Successful QR Scans / Total QR Scan Attempts) × 100,≥98,100.00,PASS
+Navigation Map Generation Success Rate (NMGSR),(Generated Maps / Map Requests) × 100,≥98,100.00,PASS

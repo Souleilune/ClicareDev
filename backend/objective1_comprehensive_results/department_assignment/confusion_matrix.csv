@@ -1,0 +1,16 @@
+,Cardiology,Dental,Diabetes Clinic,ENT and Ophthalmology,Family Medicine Regular,Family Medicine Senior/PWD,Gastroenterology Adult,General Surgery,Internal Medicine,Nephrology Adult,Neurology,Obstetrics and Gynecology,Pediatrics,Pulmonology Adult,TB DOTS
+Cardiology,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+Dental,0,4,0,0,0,0,0,0,0,0,0,0,0,0,0
+Diabetes Clinic,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0
+ENT and Ophthalmology,0,0,0,5,0,0,0,0,0,0,0,0,0,0,0
+Family Medicine Regular,0,0,0,0,5,0,0,0,0,0,0,0,0,0,0
+Family Medicine Senior/PWD,0,0,0,0,0,3,0,0,0,0,0,0,0,0,0
+Gastroenterology Adult,0,0,0,0,0,0,2,0,0,0,0,0,0,0,0
+General Surgery,0,0,0,0,0,0,0,4,0,0,0,0,0,0,0
+Internal Medicine,0,0,0,0,0,0,0,0,4,0,0,0,0,0,0
+Nephrology Adult,0,0,0,0,0,0,0,0,0,2,0,0,0,0,0
+Neurology,0,0,0,0,0,0,0,0,0,0,2,0,0,0,0
+Obstetrics and Gynecology,0,0,0,0,0,0,0,0,0,0,0,4,0,0,0
+Pediatrics,0,0,0,0,0,0,0,0,0,0,0,0,4,0,0
+Pulmonology Adult,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0
+TB DOTS,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3
