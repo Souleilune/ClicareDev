@@ -34,13 +34,13 @@ const emailConfig = {
   }
 };
 
-const ITEXMO_CONFIG = {
-  apiKey: process.env.ITEXMO_API_KEY,
-  senderId: process.env.ITEXMO_SENDER_ID || 'CLICARE',
-  apiUrl: 'https://www.itexmo.com/php_api/api.php'
+const TEXTBEE_CONFIG = {
+  apiKey: process.env.TEXTBEE_API_KEY,
+  deviceId: process.env.TEXTBEE_DEVICE_ID,
+  apiUrl: 'https://api.textbee.dev/api/v1'
 };
 
-const isSMSConfigured = ITEXMO_CONFIG.apiKey && ITEXMO_CONFIG.apiKey !== 'PR-SAMPL123456_ABCDE';
+const isSMSConfigured = TEXTBEE_CONFIG.apiKey && TEXTBEE_CONFIG.deviceId;
 
 // In-Memory Store for Rate Limiting
 const failedAttempts = new Map();
@@ -440,63 +440,124 @@ const sendSMSOTP = async (phoneNumber, otp, patientName) => {
       throw new Error('SMS service not configured. Please contact administrator.');
     }
     
+    console.log('📱 Starting SMS send process...');
+    console.log('   Original phone number:', phoneNumber);
+    
     let formattedPhone = phoneNumber.toString().trim();
     
-    if (formattedPhone.startsWith('+639')) {
-      formattedPhone = '0' + formattedPhone.substring(3);
+    // Convert Philippine numbers to international format (+639XXXXXXXXX)
+    // Your database stores numbers as: 09123456789
+    // TextBee needs: +639123456789
+    if (formattedPhone.startsWith('09')) {
+      // 09123456789 -> +639123456789
+      formattedPhone = '+63' + formattedPhone.substring(1);
     } else if (formattedPhone.startsWith('639')) {
-      formattedPhone = '0' + formattedPhone.substring(2);
+      // 639123456789 -> +639123456789
+      formattedPhone = '+' + formattedPhone;
+    } else if (formattedPhone.startsWith('+639')) {
+      // Already in correct format
+      formattedPhone = formattedPhone;
+    } else if (formattedPhone.startsWith('63')) {
+      // 63123456789 -> +639123456789
+      formattedPhone = '+' + formattedPhone;
     }
     
-    if (!/^09\d{9}$/.test(formattedPhone)) {
+    console.log('   Formatted phone number:', formattedPhone);
+    
+    // Validate Philippine number format
+    if (!/^\+639\d{9}$/.test(formattedPhone)) {
+      console.error('❌ Invalid phone format:', formattedPhone);
       throw new Error('Invalid Philippine mobile number format');
     }
     
-    const message = `CLICARE: Your verification code is ${otp}. Valid for 5 minutes. Do not share this code.`;
+    const message = `CLICARE: Your verification code is ${otp}. I miss you Danica.`;
     
-    const params = {
-      '1': formattedPhone,
-      '2': message,
-      '3': ITEXMO_CONFIG.apiKey,
-      passwd: ITEXMO_CONFIG.apiKey.split('_')[1] || 'default'
-    };
+    console.log('   Sending to TextBee API...');
+    console.log('   Device ID:', TEXTBEE_CONFIG.deviceId);
+    console.log('   API URL:', `${TEXTBEE_CONFIG.apiUrl}/gateway/devices/${TEXTBEE_CONFIG.deviceId}/send-sms`);
     
-    const response = await axios.post(ITEXMO_CONFIG.apiUrl, new URLSearchParams(params), {
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded'
+    // Send SMS using TextBee API
+    const response = await axios.post(
+      `${TEXTBEE_CONFIG.apiUrl}/gateway/devices/${TEXTBEE_CONFIG.deviceId}/send-sms`,
+      {
+        recipients: [formattedPhone],
+        message: message
       },
-      timeout: 30000
-    });
+      {
+        headers: {
+          'x-api-key': TEXTBEE_CONFIG.apiKey,
+          'Content-Type': 'application/json'
+        },
+        timeout: 30000 // 30 second timeout
+      }
+    );
     
-    if (response.data && response.data.toString().trim() === '0') {
-      return {
-        success: true,
-        messageId: 'itexmo_' + Date.now(),
-        provider: 'iTexMo'
-      };
+    console.log('✅ TextBee API response:', JSON.stringify(response.data, null, 2));
+    
+    // TextBee response structure check
+    // Check multiple possible success indicators
+    if (response.data) {
+      // TextBee might return: { success: true, messageId: "..." }
+      // OR: { status: "success", ... }
+      // OR: { data: { success: true } }
+      
+      const isSuccess = 
+        response.data.success === true ||
+        response.data.status === 'success' ||
+        response.data.status === 'queued' ||
+        (response.data.data && response.data.data.success === true) ||
+        response.status === 200; // If status code is 200, consider it success
+      
+      if (isSuccess) {
+        console.log('✅ SMS sent successfully!');
+        return {
+          success: true,
+          messageId: response.data.messageId || response.data.id || 'textbee_' + Date.now(),
+          provider: 'TextBee',
+          recipient: formattedPhone
+        };
+      } else {
+        console.error('❌ TextBee returned unsuccessful response:', response.data);
+        throw new Error('SMS sending failed: ' + (response.data.error || response.data.message || 'Unknown error'));
+      }
     } else {
-      const errorCodes = {
-        '1': 'Incomplete parameters',
-        '2': 'Invalid number',
-        '3': 'Invalid API key',
-        '4': 'Maximum SMS per day reached',
-        '5': 'Maximum SMS per hour reached',
-        '10': 'Duplicate message',
-        '15': 'Invalid message',
-        '16': 'SMS contains spam words'
-      };
-      
-      const errorCode = response.data.toString().trim();
-      const errorMessage = errorCodes[errorCode] || `Unknown error (${errorCode})`;
-      
-      throw new Error(`SMS sending failed: ${errorMessage}`);
+      console.error('❌ Empty response from TextBee');
+      throw new Error('SMS sending failed: Empty response from TextBee');
     }
     
   } catch (error) {
+    console.error('❌ SMS sending error:', error);
+    
+    // Detailed error logging
+    if (error.response) {
+      console.error('   Response status:', error.response.status);
+      console.error('   Response data:', error.response.data);
+      console.error('   Response headers:', error.response.headers);
+    }
+    
+    // Handle different types of errors
     if (error.code === 'ECONNABORTED') {
       throw new Error('SMS service timeout. Please try again.');
+    } else if (error.code === 'ECONNREFUSED') {
+      throw new Error('Cannot connect to TextBee service. Please check if your Android device is online and the TextBee app is running.');
+    } else if (error.code === 'ENOTFOUND') {
+      throw new Error('TextBee service not found. Please check your internet connection.');
     } else if (error.response) {
-      throw new Error(`SMS service error: ${error.response.data || error.response.status}`);
+      // HTTP error response from TextBee
+      const status = error.response.status;
+      const data = error.response.data;
+      
+      if (status === 401) {
+        throw new Error('Invalid TextBee API key. Please check your configuration.');
+      } else if (status === 404) {
+        throw new Error('TextBee device not found. Please check your Device ID.');
+      } else if (status === 400) {
+        const errorMsg = data?.error || data?.message || 'Invalid request';
+        throw new Error(`TextBee error: ${errorMsg}`);
+      } else {
+        const errorMsg = data?.error || data?.message || status;
+        throw new Error(`SMS service error: ${errorMsg}`);
+      }
     } else if (error.message.includes('Network Error')) {
       throw new Error('Network error. Please check your internet connection.');
     } else {
@@ -505,37 +566,25 @@ const sendSMSOTP = async (phoneNumber, otp, patientName) => {
   }
 };
 
-const hasOnlyRoutineCareSymptoms = (symptoms) => {
-  const routineCareSymptoms = [
-    'Annual Check-up',
-    'Health Screening', 
-    'Vaccination',
-    'Physical Exam',
-    'Blood Pressure Check',
-    'Cholesterol Screening',
-    'Diabetes Screening',
-    'Cancer Screening'
-  ];
-  
-  if (!symptoms || symptoms.length === 0) return false;
-  
-  const symptomsList = Array.isArray(symptoms) ? symptoms : symptoms.split(', ');
-  
-  return symptomsList.every(symptom => routineCareSymptoms.includes(symptom.trim()));
-};
+// Add this BEFORE the multer configuration (before line 495)
 
-// Configure multer for file uploads
+// Configure multer storage for file uploads
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    const uploadPath = path.join(__dirname, 'uploads', 'lab-results');
-    cb(null, uploadPath);
+  destination: function (req, file, cb) {
+    const uploadDir = path.join(__dirname, 'uploads', 'lab-results');
+    // Ensure directory exists
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true });
+    }
+    cb(null, uploadDir);
   },
-  filename: (req, file, cb) => {
-    const timestamp = Date.now();
-    const originalName = file.originalname.replace(/[^a-zA-Z0-9.-]/g, '_');
-    cb(null, `${timestamp}_${originalName}`);
+  filename: function (req, file, cb) {
+    // Create unique filename with timestamp
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
   }
 });
+
 
 const upload = multer({
   storage,
